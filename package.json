@@ -17,6 +17,14 @@
     "url": "https://github.com/boeriksson/react-redux-stub/issues"
   },
   "homepage": "https://github.com/boeriksson/react-redux-stub#readme",
+  "jest": {
+    "setupFiles": [
+      "./src/setupTests.js"
+    ],
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ]
+  },
   "dependencies": {
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
@@ -31,6 +39,8 @@
     "@babel/plugin-transform-object-assign": "^7.8.3",
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-react": "^7.8.3",
+    "@testing-library/jest-dom": "^5.1.1",
+    "@testing-library/react": "^9.4.0",
     "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
     "enzyme": "^3.11.0",

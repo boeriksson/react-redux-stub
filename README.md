@@ -11,6 +11,7 @@ Redux
 ###Testing
 Jest
 Enzyme
+React-testing-library
 
 ###Styling
 emotion
