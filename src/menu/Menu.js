@@ -1,42 +1,7 @@
-import React, {useState} from 'react'
-import styled, {css} from 'styled-components'
+import React, {useState, useEffect} from 'react'
 
-const Container = styled.div`
-    background-color: yellow;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: auto;
-
-    height: 100%;
-`
-
-const TreeTopUL = styled.ul`
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-`
-
-const Nested = styled.ul`
-    list-style-type: none;
-    display: block;
-`
-
-const Caret = styled.span`${({expanded}) => css`
-    cursor: pointer;
-    user-select: none;
-    
-    &::before {
-        content: "\\25B6";
-        color: black;
-        display: inline-block;
-        margin-right: 6px;
-    }
-    ${ expanded && `
-        &::before {
-            transform: rotate(90deg);
-        }
-    `}
-`}`
+import {Container, TreeTopUL, Nested, Caret} from './menuStyle'
+import styled from "styled-components";
 
 const payload = [
     {
@@ -86,6 +51,46 @@ const payload = [
     }
 ]
 
+const AddSlice = styled.div`
+    height: 5px;
+    margin-left: 15px;
+    &:hover {
+        background-color: green;
+    }
+`
+const AddEdit = styled.div`
+    margin-left 15px;
+    input {
+        width: 100%;
+    }
+`
+
+const AddNode = ({add}) => {
+    const [edit, setEdit] = useState(false)
+    let addInput;
+
+    useEffect(() => {
+        if (edit) addInput.focus()
+    }, [edit])
+
+    const handleKeyPress = (e) => {
+        const key =  e.keyCode || e.which
+        if (key === 13) {
+            console.log('handleKeyPress addInput.current: ', addInput)
+            addInput.blur()
+            //add(addInput.current.value)
+        }
+    }
+
+    return edit
+        ? <AddEdit><input type="text"
+                          ref={(input) => {
+                              addInput = input;
+                          }}
+                          onBlur={e => setEdit(false)}
+                          onKeyPress={handleKeyPress}/></AddEdit>
+        : <AddSlice onClick={e => setEdit(true)}/>
+}
 
 export default () => {
     const [tree, setTree] = useState(payload)
@@ -94,12 +99,18 @@ export default () => {
             node.expanded = !node.expanded
             setTree({...tree})
         }
+        const handleAdd = (value) => {
+            console.log('handleAdd value: ', value)
+        }
         return <li key={path}>
             {node.label && node.children
                 ? <Caret onClick={handleClick} expanded={node.expanded}>{node.label}</Caret>
                 : <span>{node.label}</span>}
             {node.children && node.expanded &&
-                <Nested>{node.children.map((child) => buildTree(child, `${path}.${encodeURI(child.label)}`))}</Nested>}
+            <>
+                <Nested>{node.children.map((child) => buildTree(child, `${path}.${encodeURI(child.label)}`))}</Nested>
+                <AddNode add={handleAdd}/>
+            </>}
         </li>
     }
 
