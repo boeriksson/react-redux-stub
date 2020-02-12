@@ -31,7 +31,7 @@ const Caret = styled.span`${({expanded}) => css`
         display: inline-block;
         margin-right: 6px;
     }
-    ${ !expanded && `
+    ${ expanded && `
         &::before {
             transform: rotate(90deg);
         }
@@ -89,18 +89,17 @@ const payload = [
 
 export default () => {
     const [tree, setTree] = useState(payload)
-    const buildTree = (node, key) => {
+    const buildTree = (node, path) => {
         const handleClick = () => {
             node.expanded = !node.expanded
-            console.log('handleClick node: %o, tree: %o', node.label, tree)
-            setTree(tree)
+            setTree({...tree})
         }
-        return <li key={key}>
+        return <li key={path}>
             {node.label && node.children
                 ? <Caret onClick={handleClick} expanded={node.expanded}>{node.label}</Caret>
                 : <span>{node.label}</span>}
             {node.children && node.expanded &&
-            <Nested>{node.children.map((child, ix) => buildTree(child, ix))}</Nested>}
+                <Nested>{node.children.map((child) => buildTree(child, `${path}.${encodeURI(child.label)}`))}</Nested>}
         </li>
     }
 
