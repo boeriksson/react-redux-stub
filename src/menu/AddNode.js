@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, createRef} from "react";
 
 const AddSlice = styled.div`
     height: 5px;
@@ -18,16 +18,16 @@ const AddEdit = styled.div`
 const AddNode = ({add}) => {
     const [edit, setEdit] = useState(false)
     const [value, setValue] = useState(false)
-    let addInput;
+    const addInput = createRef();
 
     useEffect(() => {
-        if (edit) addInput.focus()
+        if (edit) addInput.current.focus()
     }, [edit])
 
     const handleKeyPress = (e) => {
         const key =  e.keyCode || e.which
         if (key === 13) {
-            addInput.blur()
+            addInput.current.blur()
             add(value)
         }
     }
@@ -35,9 +35,7 @@ const AddNode = ({add}) => {
 
     return edit
         ? <AddEdit><input type="text"
-                          ref={(input) => {
-                              addInput = input;
-                          }}
+                          ref={addInput}
                           onChange={handleChange}
                           onBlur={e => setEdit(false)}
                           onKeyPress={handleKeyPress}/></AddEdit>
