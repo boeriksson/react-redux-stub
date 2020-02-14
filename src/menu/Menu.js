@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 
-import {Container, TreeTopUL, Nested, Caret} from './menuStyle'
-import AddNode from './AddNode'
+import {Container, TreeTopUL} from './menuStyle'
+import TreeNode from './TreeNode'
 
 const payload = [
     {
@@ -58,22 +58,21 @@ export default () => {
             node.expanded = !node.expanded
             setTree({...tree})
         }
-        const handleAdd = (value) => {
+        const handleAdd = (value, type) => {
+            if (!node.hasOwnProperty('children'))
+                node.children = []
             node.children.push({
                 label: value
             })
+            node.expanded = true
             setTree({...tree})
         }
-        return <li key={path}>
-            {node.label && node.children
-                ? <Caret onClick={handleClick} expanded={node.expanded}>{node.label}</Caret>
-                : <span>{node.label}</span>}
-            {node.children && node.expanded &&
-            <>
-                <Nested>{node.children.map((child) => buildTree(child, `${path}.${encodeURI(child.label)}`))}</Nested>
-                <AddNode add={handleAdd}/>
-            </>}
-        </li>
+        return <TreeNode
+            path={path}
+            node={node}
+            buildTree={buildTree}
+            handleAdd={handleAdd}
+            handleClick={handleClick}/>
     }
 
     return (

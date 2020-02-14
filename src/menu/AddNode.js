@@ -1,24 +1,40 @@
-import styled from "styled-components";
+import styled, {css}  from "styled-components";
 import React, {useEffect, useState, createRef} from "react";
 
-const AddSlice = styled.div`
+const AddSibling = styled.div`
     height: 5px;
     margin-left: 15px;
     &:hover {
         background-color: green;
+        cursor: copy;
     }
 `
-const AddEdit = styled.div`
+const AddChild = styled.div`
+    ${AddSibling}
+    
+
+`
+
+const AddEdit = styled.div`${({type}) => css`
     margin-left 15px;
     input {
         width: 100%;
     }
-`
+    ${type === 'child' && `
+        margin-left: 30px;
+    `}
+`}`
 
-const AddNode = ({add}) => {
-    const [edit, setEdit] = useState(false)
+const AddNode = ({add, type}) => {
+    const [edit, setEdit] = useState(type === 'child')
+    console.log('AddNode edit: ', edit)
     const [value, setValue] = useState(false)
     const addInput = createRef();
+
+    const getSliceByType = (type) => ({
+        'sibling': <AddSibling onClick={e => setEdit(true)}/>,
+        'child': <AddChild onClick={e => setEdit(true)}/>
+    }[type])
 
     useEffect(() => {
         if (edit) addInput.current.focus()
@@ -32,14 +48,13 @@ const AddNode = ({add}) => {
         }
     }
     const handleChange = (e) => setValue(e.target.value)
-
     return edit
-        ? <AddEdit><input type="text"
+        ? <AddEdit type={type}><input type="text"
                           ref={addInput}
                           onChange={handleChange}
                           onBlur={e => setEdit(false)}
                           onKeyPress={handleKeyPress}/></AddEdit>
-        : <AddSlice onClick={e => setEdit(true)}/>
+        : getSliceByType(type)
 }
 
 export default AddNode

@@ -1,11 +1,9 @@
 import styled, {css} from "styled-components";
 
 export const Container = styled.div`
-    background-color: yellow;
-    flex-grow: 0;
+    flex-grow: 1;
     flex-shrink: 0;
-    flex-basis: auto;
-
+    flex-basis: 300px;
     height: 100%;
 `
 
@@ -37,3 +35,17 @@ export const Caret = styled.span`${({expanded}) => css`
         }
     `}
 `}`
+
+export const Node = styled.li`
+    display: flex;
+    & > div:first-child {
+        width: 3px;
+        &:hover {
+            background-color: green;
+            cursor: copy;
+        }
+    }
+    & > div:nth-child(2) {
+        flex-grow: 1;
+    }
+`
