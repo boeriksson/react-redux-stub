@@ -9,11 +9,6 @@ const AddSibling = styled.div`
         cursor: copy;
     }
 `
-const AddChild = styled.div`
-    ${AddSibling}
-    
-
-`
 
 const AddEdit = styled.div`${({type}) => css`
     margin-left 15px;
@@ -27,14 +22,8 @@ const AddEdit = styled.div`${({type}) => css`
 
 const AddNode = ({add, type}) => {
     const [edit, setEdit] = useState(type === 'child')
-    console.log('AddNode edit: ', edit)
     const [value, setValue] = useState(false)
     const addInput = createRef();
-
-    const getSliceByType = (type) => ({
-        'sibling': <AddSibling onClick={e => setEdit(true)}/>,
-        'child': <AddChild onClick={e => setEdit(true)}/>
-    }[type])
 
     useEffect(() => {
         if (edit) addInput.current.focus()
@@ -54,7 +43,7 @@ const AddNode = ({add, type}) => {
                           onChange={handleChange}
                           onBlur={e => setEdit(false)}
                           onKeyPress={handleKeyPress}/></AddEdit>
-        : getSliceByType(type)
+        : <AddSibling onClick={e => setEdit(true)}/>
 }
 
 export default AddNode

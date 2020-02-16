@@ -1,24 +1,23 @@
 import React, {useState} from "react";
 import AddNode from "./AddNode";
-import {Caret, Nested, Node} from "./menuStyle";
+import {Caret, Container, Nested, Node} from "./menuStyle";
 
-const TreeNode = ({path, node, buildTree, handleAdd, handleClick}) => {
+const TreeNode = ({node, buildTree, handleAdd, handleClick}) => {
     const [showAddChild, setShowAddChild] = useState(false)
-    console.log('render node.label: ', node.label)
-    const addChild = () => {
-        setShowAddChild(!showAddChild)
-        console.log('AddChild, showAddChild: %o, node.label: %o', showAddChild, node.label)
-    }
+    const addChild = () => setShowAddChild(!showAddChild)
     return (
-        <Node key={path}>
+        <Node selected={node.selected}>
             <div onClick={addChild}/>
             <div>
-                {node.label && node.children
-                    ? <Caret onClick={handleClick} expanded={node.expanded}>{node.label}</Caret>
-                    : <span>{node.label}</span>}
+                <div onClick={handleClick}>
+                    {node.label && node.children
+                        ? <Caret data-tooltip="tooltipCaret"
+                                 expanded={node.expanded}>{node.label}</Caret>
+                        : <span data-tooltip="tooltip">{node.label}</span>}
+                </div>
                 {node.children && node.expanded &&
                 <>
-                    <Nested>{node.children.map((child) => buildTree(child, `${path}.${encodeURI(child.label)}`))}</Nested>
+                    <Nested>{node.children.map((child) => buildTree(child))}</Nested>
                     {!showAddChild && <AddNode add={handleAdd} type='sibling'/>}
                 </>}
                 {showAddChild && <AddNode add={handleAdd} type='child'/>}

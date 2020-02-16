@@ -5,6 +5,10 @@ export const Container = styled.div`
     flex-shrink: 0;
     flex-basis: 300px;
     height: 100%;
+    
+    &:focus {
+        outline: none;
+    }
 `
 
 export const TreeTopUL = styled.ul`
@@ -36,7 +40,7 @@ export const Caret = styled.span`${({expanded}) => css`
     `}
 `}`
 
-export const Node = styled.li`
+export const Node = styled.li`${({selected}) => css`
     display: flex;
     & > div:first-child {
         width: 3px;
@@ -47,5 +51,10 @@ export const Node = styled.li`
     }
     & > div:nth-child(2) {
         flex-grow: 1;
+        ${selected && `
+            & > div:first-child {
+                background-color: pink;
+            }
+        `}
     }
-`
+`}`
