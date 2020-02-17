@@ -43,13 +43,6 @@ export const Caret = styled.span`${({expanded}) => css`
 export const Node = styled.li`${({selected}) => css`
     display: flex;
     & > div:first-child {
-        width: 3px;
-        &:hover {
-            background-color: green;
-            cursor: copy;
-        }
-    }
-    & > div:nth-child(2) {
         flex-grow: 1;
         ${selected && `
             & > div:first-child {

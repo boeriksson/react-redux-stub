@@ -9,28 +9,35 @@ const payload = [
         expanded: true,
         children: [
             {
+                id: 1,
                 label: "björk",
                 expanded: false,
                 children: [
                     {
+                        id:2,
                         label: "skogsbjörk"
                     },
                     {
+                        id: 3,
                         label: "hängbjörk"
                     }
                 ]
             },
             {
+                id: 4,
                 label: "ek",
                 expanded: true,
                 children: [
                     {
+                        id: 5,
                         label: "skogsek"
                     },
                     {
+                        id: 6,
                         label: "rödek"
                     },
                     {
+                        id: 7,
                         label: "korkek"
                     }
                 ]
@@ -38,13 +45,16 @@ const payload = [
         ]
     },
     {
+        id: 8,
         label: "barrträd",
         expanded: false,
         children: [
             {
+                id: 9,
                 label: "tall"
             },
             {
+                id: 10,
                 label: "gran"
             }
         ]
@@ -81,6 +91,22 @@ function deSelectNode(tree) {
     })
 }
 
+const getIxOfNode = (flatTree, node) => flatTree.findIndex(nodeComp => node === nodeComp)
+
+function findParent(tree, node) {
+    const flatTree = flattenTree(tree)
+    let ix = getIxOfNode(flatTree, node)
+    const level = flatTree[ix].level
+    if (level > 0) {
+        flatTree[ix].selected = false
+        while (flatTree[ix].level >= level) {
+            ix--
+        }
+        return flatTree[ix]
+    }
+    return null
+}
+
 export default () => {
     let nodeIx = 0
     const [tree, setTree] = useState(payload)
@@ -92,11 +118,14 @@ export default () => {
         let ix = flatTree.findIndex(node => node.selected)
         if (ix < 0) ix = 0
 
+        const hasChildren = flatTree[ix].children && flatTree[ix].children.length > 0;
+        const editKey = e.altKey || e.ctrlKey;
+
         switch (key) {
             case 13:    // 13: enter - ladda content
                 break
             case 32:    // 32: mellanslag  - toggle expanded
-                if (flatTree[ix].children && flatTree[ix].children.length > 0) {
+                if (hasChildren) {
                     flatTree[ix].expanded = !flatTree[ix].expanded
                 }
                 break
@@ -126,7 +155,10 @@ export default () => {
                 e.preventDefault()
                 break
             case 39:    // 39: höger   - if children, select first child
-                if (flatTree[ix].children && flatTree[ix].children.length > 0) {
+                if (editKey && !hasChildren) {
+                    flatTree[ix].addChild = true
+                }
+                if (hasChildren) {
                     flatTree[ix].selected = false
                     flatTree[ix].expanded = true
                     flatTree[ix].children[0].selected = true
@@ -138,7 +170,9 @@ export default () => {
                         //             - if last, parents next sibling
                         //             - if root and bottom, select first child of root
                 flatTree[ix].selected = false
-                if (ix + 1 < flatTree.length) {
+                if (editKey) {
+                    flatTree[ix].addSibling = true
+                } else if (ix + 1 < flatTree.length) {
                     flatTree[ix + 1].selected = true
                 } else {
                     flatTree[0].selected = true
@@ -150,11 +184,20 @@ export default () => {
         setTree([...tree])
     }
 
-    function handleAddChild(node, value) {
-        if (!node.hasOwnProperty('children'))
-            node.children = []
+    function handleAddChild(node, value, type) {
+        if (type === 'child' && !node.hasOwnProperty('children')) node.children = []
+        let addArray
         deSelectNode(tree)
-        node.children.push({
+        node.addSibling && delete node.addSibling
+        node.addChild && delete node.addChild
+        if (type = 'sibling') {
+            const parent = findParent(tree, node)
+            addArray = parent ? parent.children : tree
+        } else {
+            addArray = node.children
+        }
+        addArray.push({
+            id: new Date().getTime(),
             label: value,
             selected: true
         })
@@ -171,8 +214,8 @@ export default () => {
             node.selected = true
             setTree([...tree])
         }
-        const handleAdd = (value) => {
-            handleAddChild(node, value);
+        const handleAdd = (value, type) => {
+            handleAddChild(node, value, type);
         }
         return <TreeNode
             key={nodeIx++}
